@@ -3,6 +3,7 @@ package github.nighter.smartspawner.spawner.interactions.click;
 import github.nighter.smartspawner.SmartSpawner;
 import github.nighter.smartspawner.hooks.protections.CheckOpenMenu;
 import github.nighter.smartspawner.language.MessageService;
+import github.nighter.smartspawner.sellwands.SellwandManager;
 import github.nighter.smartspawner.spawner.gui.main.SpawnerMenuUI;
 import github.nighter.smartspawner.spawner.gui.main.SpawnerMenuFormUI;
 import github.nighter.smartspawner.spawner.interactions.stack.SpawnerStackHandler;
@@ -10,6 +11,7 @@ import github.nighter.smartspawner.spawner.interactions.type.SpawnEggHandler;
 import github.nighter.smartspawner.spawner.properties.SpawnerData;
 import github.nighter.smartspawner.spawner.data.SpawnerManager;
 import github.nighter.smartspawner.Scheduler;
+import github.nighter.smartspawner.spawner.sell.SellResult;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
@@ -95,8 +97,30 @@ public class SpawnerClickManager implements Listener {
         // Prevent default interaction
         event.setCancelled(true);
 
+        if (heldItem.getType() == Material.BLAZE_ROD){
+            handleSellwandInteraction(player, block, spawner, heldItem);
+        }
+
         // Process spawner interaction
         handleSpawnerInteraction(player, block, heldItem, itemType, spawner);
+    }
+
+    private void handleSellwandInteraction(Player player, Block block, SpawnerData spawner, ItemStack heldItem) {
+        SellwandManager sellwandManager = new SellwandManager(heldItem);
+        if (sellwandManager.isSellwand(heldItem)) {
+            SellResult result = plugin.getSpawnerSellManager().sellAllItems(player, spawner, sellwandManager.getMulti(heldItem));
+
+            if (result == null) {
+                return;
+            }
+
+            final long amountSold = result.getItemsSold();
+            final double moneyMade = result.getTotalValue();
+
+            if (!sellwandManager.sellWandUse(amountSold, moneyMade)) {
+                player.getInventory().remove(heldItem);
+            }
+        }
     }
 
     private boolean isValidSpawnerInteraction(PlayerInteractEvent event) {

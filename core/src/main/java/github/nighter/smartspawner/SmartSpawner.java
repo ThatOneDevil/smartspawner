@@ -10,6 +10,7 @@ import github.nighter.smartspawner.commands.list.gui.management.SpawnerManagemen
 import github.nighter.smartspawner.commands.list.gui.management.SpawnerManagementGUI;
 import github.nighter.smartspawner.commands.list.gui.adminstacker.AdminStackerHandler;
 import github.nighter.smartspawner.commands.prices.PricesGUI;
+import github.nighter.smartspawner.sellwands.SellwandCommand;
 import github.nighter.smartspawner.spawner.config.SpawnerSettingsConfig;
 import github.nighter.smartspawner.spawner.config.ItemSpawnerSettingsConfig;
 import github.nighter.smartspawner.logging.LoggingConfig;
@@ -161,6 +162,7 @@ public class SmartSpawner extends JavaPlugin implements SmartSpawnerPlugin {
         setupCommand();
         setupBtatsMetrics();
         registerListeners();
+        this.registerCommand("sellwand", new SellwandCommand());
 
         // Trigger world event handler to attempt initial spawner loading
         // This is done after all components are initialized
